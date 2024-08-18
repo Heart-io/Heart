@@ -1,0 +1,516 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Heart Clicker Game</title>
+    <style>
+        /* Existing styles */
+        body {
+            font-family: 'Arial', sans-serif;
+            text-align: center;
+            margin: 0;
+            padding: 0;
+            background-color: #f5f5f5;
+            transition: background-color 0.3s;
+        }
+
+        #game {
+            margin-top: 50px;
+            position: relative;
+        }
+
+        #clicker {
+            background: none;
+            border: none;
+            cursor: pointer;
+            outline: none;
+            font-size: 120px;
+            color: #e74c3c;
+            transition: transform 0.2s ease-in-out;
+        }
+
+        #clicker:active {
+            animation: bounce 0.5s;
+        }
+
+        @keyframes bounce {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.2); }
+            100% { transform: scale(1); }
+        }
+
+        #shop-toggle, #character-changer-toggle {
+            border: none;
+            width: 150px;
+            height: 50px;
+            cursor: pointer;
+            outline: none;
+            margin: 20px;
+            transition: transform 0.2s ease-in-out;
+        }
+
+        #shop-toggle {
+            background: url('https://via.placeholder.com/150x50/3498db/FFFFFF?text=Shop') no-repeat center center;
+        }
+
+        #character-changer-toggle {
+            background: url('https://via.placeholder.com/150x50/2ecc71/FFFFFF?text=Character+Changer') no-repeat center center;
+        }
+
+        #shop-toggle:hover, #character-changer-toggle:hover {
+            transform: scale(1.1);
+        }
+
+        #shop, #character-changer {
+            padding: 20px;
+            border: 2px solid #ddd;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            display: none;
+            position: absolute;
+            top: 200px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 300px;
+            background-size: cover;
+            z-index: 10;
+        }
+
+        #shop {
+            background-color: #fff; /* White background for the shop */
+        }
+
+        #character-changer {
+            background-color: #fff; /* White background for character changer */
+        }
+
+        #shop h2, #character-changer h2 {
+            margin-top: 0;
+            font-size: 24px;
+        }
+
+        #shop p, #character-changer p {
+            margin: 5px 0;
+            font-size: 16px;
+        }
+
+        #shop .item, #character-changer .item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin: 10px 0;
+        }
+
+        #shop .item span, #character-changer .item span {
+            font-size: 14px;
+        }
+
+        #shop button, #character-changer button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            background: #3498db;
+            color: #fff;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background 0.2s ease-in-out;
+        }
+
+        #shop button:hover, #character-changer button:hover {
+            background: #2980b9;
+        }
+
+        #shop #close-shop, #character-changer #close-character-changer {
+            background: url('https://via.placeholder.com/30/ff0000/FFFFFF?text=X') no-repeat center center;
+            border: none;
+            width: 30px;
+            height: 30px;
+            cursor: pointer;
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background-size: contain;
+        }
+
+        #character-changer #close-character-changer {
+            top: 50px;
+        }
+
+        #character-changer-toggle {
+            margin-top: 20px;
+        }
+
+        /* Dark Theme */
+        .dark-theme {
+            background-color: #2c3e50;
+            color: #ecf0f1;
+        }
+
+        /* Orange Theme */
+        .orange-theme {
+            background-color: #f39c12;
+            color: #2c3e50;
+        }
+
+        /* White Theme */
+        .white-theme {
+            background-color: #ffffff;
+            color: #2c3e50;
+        }
+    </style>
+</head>
+<body>
+    <div id="game">
+        <button id="clicker">❤️</button>
+        <p>Hearts: <span id="heart-count">0</span></p>
+        <button id="shop-toggle"></button>
+        <button id="character-changer-toggle"></button>
+        <div id="shop">
+            <button id="close-shop"></button>
+            <h2>Shop</h2>
+            <!-- Existing Upgrades -->
+            <div class="item">
+                <span>Upgrade 1: Extra Heart per Click</span>
+                <button id="buy-upgrade1">Cost: 10 Hearts</button>
+            </div>
+            <div class="item">
+                <span>Upgrade 2: +5 Hearts per Click</span>
+                <button id="buy-upgrade2">Cost: 50 Hearts</button>
+            </div>
+            <div class="item">
+                <span>Double Hearts</span>
+                <button id="buy-upgrade3">Cost: 100 Hearts</button>
+            </div>
+            <div class="item">
+                <span>Auto-Clicker (1 Click/Second)</span>
+                <button id="buy-upgrade4">Cost: 200 Hearts</button>
+            </div>
+            <div class="item">
+                <span>Heart Explosion (+50 Hearts)</span>
+                <button id="buy-upgrade5">Cost: 500 Hearts</button>
+            </div>
+            <!-- Additional Upgrades -->
+            <div class="item">
+                <span>Upgrade 6: +2 Hearts per Click</span>
+                <button id="buy-upgrade6">Cost: 300 Hearts</button>
+            </div>
+            <div class="item">
+                <span>Upgrade 7: +10 Hearts per Click</span>
+                <button id="buy-upgrade7">Cost: 600 Hearts</button>
+            </div>
+            <div class="item">
+                <span>Triple Hearts</span>
+                <button id="buy-upgrade8">Cost: 1200 Hearts</button>
+            </div>
+            <div class="item">
+                <span>Auto-Clicker (2 Clicks/Second)</span>
+                <button id="buy-upgrade9">Cost: 2400 Hearts</button>
+            </div>
+            <div class="item">
+                <span>Heart Burst (+100 Hearts)</span>
+                <button id="buy-upgrade10">Cost: 5000 Hearts</button>
+            </div>
+            <div class="item">
+                <span>Upgrade 11: +20 Hearts per Click</span>
+                <button id="buy-upgrade11">Cost: 10000 Hearts</button>
+            </div>
+            <div class="item">
+                <span>Upgrade 12: +50 Hearts per Click</span>
+                <button id="buy-upgrade12">Cost: 20000 Hearts</button>
+            </div>
+            <div class="item">
+                <span>Quadruple Hearts</span>
+                <button id="buy-upgrade13">Cost: 40000 Hearts</button>
+            </div>
+            <div class="item">
+                <span>Auto-Clicker (3 Clicks/Second)</span>
+                <button id="buy-upgrade14">Cost: 80000 Hearts</button>
+            </div>
+            <div class="item">
+                <span>Heart Explosion (+200 Hearts)</span>
+                <button id="buy-upgrade15">Cost: 160000 Hearts</button>
+            </div>
+            <div class="item">
+                <span>Upgrade 16: +100 Hearts per Click</span>
+                <button id="buy-upgrade16">Cost: 320000 Hearts</button>
+            </div>
+            <div class="item">
+                <span>Upgrade 17: +200 Hearts per Click</span>
+                <button id="buy-upgrade17">Cost: 640000 Hearts</button>
+            </div>
+            <div class="item">
+                <span>Quintuple Hearts</span>
+                <button id="buy-upgrade18">Cost: 1280000 Hearts</button>
+            </div>
+            <div class="item">
+                <span>Auto-Clicker (4 Clicks/Second)</span>
+                <button id="buy-upgrade19">Cost: 2560000 Hearts</button>
+            </div>
+            <div class="item">
+                <span>Heart Burst (+500 Hearts)</span>
+                <button id="buy-upgrade20">Cost: 5120000 Hearts</button>
+            </div>
+            <div class="item">
+                <button id="buy-vip-heart">Cost: 1,000,000 Hearts</button>
+            </div>
+        </div>
+
+        <div id="character-changer">
+            <button id="close-character-changer"></button>
+            <h2>Change Heart Character</h2>
+            <!-- Heart Characters -->
+            <div class="item">
+                <span>Blue Heart</span>
+                <button class="heart-type" data-heart="💙" data-cost="100">Cost: 100 Hearts</button>
+            </div>
+            <div class="item">
+                <span>Green Heart</span>
+                <button class="heart-type" data-heart="💚" data-cost="150">Cost: 150 Hearts</button>
+            </div>
+            <div class="item">
+                <span>Yellow Heart</span>
+                <button class="heart-type" data-heart="💛" data-cost="200">Cost: 200 Hearts</button>
+            </div>
+            <div class="item">
+                <span>Purple Heart</span>
+                <button class="heart-type" data-heart="💜" data-cost="250">Cost: 250 Hearts</button>
+            </div>
+            <div class="item">
+                <span>White Heart</span>
+                <button class="heart-type" data-heart="🤍" data-cost="300">Cost: 300 Hearts</button>
+            </div>
+            <div class="item">
+                <span>Black Heart</span>
+                <button class="heart-type" data-heart="🖤" data-cost="350">Cost: 350 Hearts</button>
+            </div>
+            <div class="item">
+                <span>Sparkling Heart</span>
+                <button class="heart-type" data-heart="💖" data-cost="400">Cost: 400 Hearts</button>
+            </div>
+            <div class="item">
+                <span>Growing Heart</span>
+                <button class="heart-type" data-heart="💗" data-cost="450">Cost: 450 Hearts</button>
+            </div>
+            <div class="item">
+                <span>Heart with Ribbon</span>
+                <button class="heart-type" data-heart="💝" data-cost="500">Cost: 500 Hearts</button>
+            </div>
+            <div class="item">
+                <span>Heart with Arrow</span>
+                <button class="heart-type" data-heart="💘" data-cost="550">Cost: 550 Hearts</button>
+            </div>
+            <div class="item">
+                <span>Heart on Fire</span>
+                <button class="heart-type" data-heart="❤️‍🔥" data-cost="600">Cost: 600 Hearts</button>
+            </div>
+            <div class="item">
+                <span>Revolving Hearts</span>
+                <button class="heart-type" data-heart="💞" data-cost="650">Cost: 650 Hearts</button>
+            </div>
+            <div class="item">
+                <span>Two Hearts</span>
+                <button class="heart-type" data-heart="💕" data-cost="700">Cost: 700 Hearts</button>
+            </div>
+            <div class="item">
+                <span>Heart Decoration</span>
+                <button class="heart-type" data-heart="💟" data-cost="750">Cost: 750 Hearts</button>
+            </div>
+            <div class="item">
+                <span>Heavy Heart Exclamation</span>
+                <button class="heart-type" data-heart="❣️" data-cost="800">Cost: 800 Hearts</button>
+            </div>
+            <div class="item">
+                <span>Heart with Bandage</span>
+                <button class="heart-type" data-heart="❤️‍🩹" data-cost="850">Cost: 850 Hearts</button>
+            </div>
+            <div class="item">
+                <button id="change-character-btn">Change Character</button>
+            </div>
+        </div>
+    </div>
+    <script>
+        let heartCount = 0;
+        let currentHeart = '❤️';
+        let heartsPerClick = 1;
+        let autoClickerInterval = null;
+
+        function updateHeartCount() {
+            document.getElementById('heart-count').innerText = heartCount;
+        }
+
+        function changeHeartCharacter(newHeart, cost) {
+            if (heartCount >= cost) {
+                heartCount -= cost;
+                currentHeart = newHeart;
+                document.getElementById('clicker').innerText = currentHeart;
+                updateHeartCount();
+            } else {
+                alert('Not enough hearts!');
+            }
+        }
+
+        function applyUpgrade(upgrade) {
+            switch (upgrade) {
+                case 'upgrade1':
+                    heartsPerClick += 1;
+                    break;
+                case 'upgrade2':
+                    heartsPerClick += 5;
+                    break;
+                case 'upgrade3':
+                    heartsPerClick *= 2;
+                    break;
+                case 'upgrade4':
+                    if (!autoClickerInterval) {
+                        autoClickerInterval = setInterval(() => {
+                            heartCount += heartsPerClick;
+                            updateHeartCount();
+                        }, 1000);
+                    }
+                    break;
+                case 'upgrade5':
+                    heartCount += 50;
+                    updateHeartCount();
+                    break;
+                case 'upgrade6':
+                    heartsPerClick += 2;
+                    break;
+                case 'upgrade7':
+                    heartsPerClick += 10;
+                    break;
+                case 'upgrade8':
+                    heartsPerClick *= 3;
+                    break;
+                case 'upgrade9':
+                    if (!autoClickerInterval) {
+                        autoClickerInterval = setInterval(() => {
+                            heartCount += heartsPerClick * 2;
+                            updateHeartCount();
+                        }, 1000);
+                    }
+                    break;
+                case 'upgrade10':
+                    heartCount += 100;
+                    updateHeartCount();
+                    break;
+                case 'upgrade11':
+                    heartsPerClick += 20;
+                    break;
+                case 'upgrade12':
+                    heartsPerClick += 50;
+                    break;
+                case 'upgrade13':
+                    heartsPerClick *= 4;
+                    break;
+                case 'upgrade14':
+                    if (!autoClickerInterval) {
+                        autoClickerInterval = setInterval(() => {
+                            heartCount += heartsPerClick * 3;
+                            updateHeartCount();
+                        }, 1000);
+                    }
+                    break;
+                case 'upgrade15':
+                    heartCount += 200;
+                    updateHeartCount();
+                    break;
+                case 'upgrade16':
+                    heartsPerClick += 100;
+                    break;
+                case 'upgrade17':
+                    heartsPerClick += 200;
+                    break;
+                case 'upgrade18':
+                    heartsPerClick *= 5;
+                    break;
+                case 'upgrade19':
+                    if (!autoClickerInterval) {
+                        autoClickerInterval = setInterval(() => {
+                            heartCount += heartsPerClick * 4;
+                            updateHeartCount();
+                        }, 1000);
+                    }
+                    break;
+                case 'upgrade20':
+                    heartCount += 500;
+                    updateHeartCount();
+                    break;
+            }
+        }
+
+        function updateTheme() {
+            const now = new Date();
+            const hour = now.getHours();
+            let themeClass = '';
+
+            if (hour >= 6 && hour < 12) {
+                themeClass = 'white-theme';
+            } else if (hour >= 12 && hour < 18) {
+                themeClass = 'orange-theme';
+            } else {
+                themeClass = 'dark-theme';
+            }
+
+            document.body.className = themeClass;
+        }
+
+        document.getElementById('clicker').addEventListener('click', () => {
+            heartCount += heartsPerClick;
+            updateHeartCount();
+        });
+
+        document.getElementById('shop-toggle').addEventListener('click', () => {
+            const shop = document.getElementById('shop');
+            shop.style.display = (shop.style.display === 'none' || shop.style.display === '') ? 'block' : 'none';
+        });
+
+        document.getElementById('character-changer-toggle').addEventListener('click', () => {
+            const characterChanger = document.getElementById('character-changer');
+            characterChanger.style.display = (characterChanger.style.display === 'none' || characterChanger.style.display === '') ? 'block' : 'none';
+        });
+
+        document.getElementById('close-shop').addEventListener('click', () => {
+            document.getElementById('shop').style.display = 'none';
+        });
+
+        document.getElementById('close-character-changer').addEventListener('click', () => {
+            document.getElementById('character-changer').style.display = 'none';
+        });
+
+        document.querySelectorAll('.heart-type').forEach(button => {
+            button.addEventListener('click', () => {
+                const newHeart = button.getAttribute('data-heart');
+                const cost = parseInt(button.getAttribute('data-cost'));
+                changeHeartCharacter(newHeart, cost);
+            });
+        });
+
+        document.getElementById('change-character-btn').addEventListener('click', () => {
+            const heartTypes = document.querySelectorAll('.heart-type');
+            const randomIndex = Math.floor(Math.random() * heartTypes.length);
+            const randomHeartButton = heartTypes[randomIndex];
+            const newHeart = randomHeartButton.getAttribute('data-heart');
+            const cost = parseInt(randomHeartButton.getAttribute('data-cost'));
+            changeHeartCharacter(newHeart, cost);
+        });
+
+        document.querySelectorAll('#shop button[id^="buy-upgrade"]').forEach(button => {
+            button.addEventListener('click', () => {
+                const upgradeId = button.id.replace('buy-', '');
+                const cost = parseInt(button.innerText.replace('Cost: ', '').replace(' Hearts', ''));
+                if (heartCount >= cost) {
+                    heartCount -= cost;
+                    updateHeartCount();
+                    applyUpgrade(upgradeId);
+                } else {
+                    alert('Not enough hearts!');
+                }
+            });
+        });
+
+        updateTheme(); // Set the theme on page load
+        setInterval(updateTheme, 60000); // Update theme every minute
+    </script>
+</body>
+</html>
