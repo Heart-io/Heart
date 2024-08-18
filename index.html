@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Heart Clicker Game</title>
     <style>
-        /* Existing styles */
         body {
             font-family: 'Arial', sans-serif;
             text-align: center;
@@ -152,12 +151,6 @@
             background-color: #f39c12;
             color: #2c3e50;
         }
-
-        /* White Theme */
-        .white-theme {
-            background-color: #ffffff;
-            color: #2c3e50;
-        }
     </style>
 </head>
 <body>
@@ -252,7 +245,7 @@
                 <button id="buy-upgrade20">Cost: 5120000 Hearts</button>
             </div>
             <div class="item">
-                <button id="buy-vip-heart">Cost: 1,000,000 Hearts</button>
+                <button id="buy-vip-heart">VIP Heart: Cost: 1,000,000 Hearts</button>
             </div>
         </div>
 
@@ -332,11 +325,12 @@
     <script>
         let heartCount = 0;
         let currentHeart = '❤️';
-        let heartsPerClick = 1;
         let autoClickerInterval = null;
+        let heartsPerClick = 1;
 
         function updateHeartCount() {
             document.getElementById('heart-count').innerText = heartCount;
+            localStorage.setItem('heartCount', heartCount);
         }
 
         function changeHeartCharacter(newHeart, cost) {
@@ -359,9 +353,10 @@
                     heartsPerClick += 5;
                     break;
                 case 'upgrade3':
-                    heartsPerClick *= 2;
+                    // Double hearts logic
                     break;
                 case 'upgrade4':
+                    // Auto-clicker logic
                     if (!autoClickerInterval) {
                         autoClickerInterval = setInterval(() => {
                             heartCount += heartsPerClick;
@@ -370,72 +365,39 @@
                     }
                     break;
                 case 'upgrade5':
+                    // Heart explosion logic
                     heartCount += 50;
                     updateHeartCount();
                     break;
-                case 'upgrade6':
-                    heartsPerClick += 2;
+                // Add additional cases for other upgrades
+                default:
                     break;
-                case 'upgrade7':
-                    heartsPerClick += 10;
-                    break;
-                case 'upgrade8':
-                    heartsPerClick *= 3;
-                    break;
-                case 'upgrade9':
-                    if (!autoClickerInterval) {
-                        autoClickerInterval = setInterval(() => {
-                            heartCount += heartsPerClick * 2;
-                            updateHeartCount();
-                        }, 1000);
-                    }
-                    break;
-                case 'upgrade10':
-                    heartCount += 100;
-                    updateHeartCount();
-                    break;
-                case 'upgrade11':
-                    heartsPerClick += 20;
-                    break;
-                case 'upgrade12':
-                    heartsPerClick += 50;
-                    break;
-                case 'upgrade13':
-                    heartsPerClick *= 4;
-                    break;
-                case 'upgrade14':
-                    if (!autoClickerInterval) {
-                        autoClickerInterval = setInterval(() => {
-                            heartCount += heartsPerClick * 3;
-                            updateHeartCount();
-                        }, 1000);
-                    }
-                    break;
-                case 'upgrade15':
-                    heartCount += 200;
-                    updateHeartCount();
-                    break;
-                case 'upgrade16':
-                    heartsPerClick += 100;
-                    break;
-                case 'upgrade17':
-                    heartsPerClick += 200;
-                    break;
-                case 'upgrade18':
-                    heartsPerClick *= 5;
-                    break;
-                case 'upgrade19':
-                    if (!autoClickerInterval) {
-                        autoClickerInterval = setInterval(() => {
-                            heartCount += heartsPerClick * 4;
-                            updateHeartCount();
-                        }, 1000);
-                    }
-                    break;
-                case 'upgrade20':
-                    heartCount += 500;
-                    updateHeartCount();
-                    break;
+            }
+        }
+
+        function saveGame() {
+            localStorage.setItem('heartCount', heartCount);
+            localStorage.setItem('currentHeart', currentHeart);
+            localStorage.setItem('heartsPerClick', heartsPerClick);
+        }
+
+        function loadGame() {
+            const savedHeartCount = localStorage.getItem('heartCount');
+            const savedCurrentHeart = localStorage.getItem('currentHeart');
+            const savedHeartsPerClick = localStorage.getItem('heartsPerClick');
+
+            if (savedHeartCount !== null) {
+                heartCount = parseInt(savedHeartCount, 10);
+                updateHeartCount();
+            }
+
+            if (savedCurrentHeart) {
+                currentHeart = savedCurrentHeart;
+                document.getElementById('clicker').innerText = currentHeart;
+            }
+
+            if (savedHeartsPerClick !== null) {
+                heartsPerClick = parseInt(savedHeartsPerClick, 10);
             }
         }
 
@@ -495,22 +457,34 @@
             changeHeartCharacter(newHeart, cost);
         });
 
-        document.querySelectorAll('#shop button[id^="buy-upgrade"]').forEach(button => {
+        document.querySelectorAll('#shop button').forEach(button => {
             button.addEventListener('click', () => {
-                const upgradeId = button.id.replace('buy-', '');
-                const cost = parseInt(button.innerText.replace('Cost: ', '').replace(' Hearts', ''));
-                if (heartCount >= cost) {
-                    heartCount -= cost;
-                    updateHeartCount();
+                const upgradeId = button.id;
+                const upgradeCost = parseInt(button.innerText.match(/\d+/)[0]);
+                if (heartCount >= upgradeCost) {
+                    heartCount -= upgradeCost;
                     applyUpgrade(upgradeId);
+                    updateHeartCount();
                 } else {
                     alert('Not enough hearts!');
                 }
             });
         });
 
-        updateTheme(); // Set the theme on page load
-        setInterval(updateTheme, 60000); // Update theme every minute
+        document.getElementById('buy-vip-heart').addEventListener('click', () => {
+            const cost = 1000000;
+            if (heartCount >= cost) {
+                heartCount -= cost;
+                currentHeart = '💛'; // VIP Heart
+                document.getElementById('clicker').innerText = currentHeart;
+                updateHeartCount();
+            } else {
+                alert('Not enough hearts!');
+            }
+        });
+
+        updateTheme();
+        loadGame();
     </script>
 </body>
 </html>
